@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Start/stop the mongodb Database
+#
+
+.. /lib/svc/share/smf_include.sh
+
+# mongodb expects hostname in $HOSTNAME by default
+HOSTNAME=`hostname`
+PIDFILE=/var/spool/locks/mongodb
+
+case "$1" in
+
+    'start')
+	    /opt/mongo/bin/mongod --fork --logpath /var/log/mongo.log --log
+append --dbpath /var/lib/mongo
+        ;;
+
+    'stop')
+        if [ -f ${PIDFILE} ]; then
+		    kill `cat $PIDFILE`
+        fi
+	    ;;
+
+    'restart')
+        stop
+        sleep1
+        start
+        ;;
+
+    *)
+	    echo "usage: $0 {start|stop}"
+	    exit 1
+	    ;;
+
+esac
